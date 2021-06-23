@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="module_dynamicheader" default="compile.module.dynamicheader">
+  <dirname property="module.dynamicheader.basedir" file="${ant.file.module_dynamicheader}"/>
+  
+  <property name="module.jdk.home.dynamicheader" value="${project.jdk.home}"/>
+  <property name="module.jdk.bin.dynamicheader" value="${project.jdk.bin}"/>
+  <property name="module.jdk.classpath.dynamicheader" value="${project.jdk.classpath}"/>
+  
+  <property name="compiler.args.dynamicheader" value="-encoding UTF-8 -source 11 -target 11 ${compiler.args}"/>
+  
+  <property name="dynamicheader.output.dir" value="${module.dynamicheader.basedir}/out/production/DynamicHeader"/>
+  <property name="dynamicheader.testoutput.dir" value="${module.dynamicheader.basedir}/out/test/DynamicHeader"/>
+  
+  <path id="dynamicheader.module.bootclasspath">
+    <!-- Paths to be included in compilation bootclasspath -->
+  </path>
+  
+  <path id="dynamicheader.module.production.classpath">
+    <path refid="${module.jdk.classpath.dynamicheader}"/>
+  </path>
+  
+  <path id="dynamicheader.runtime.production.module.classpath">
+    <pathelement location="${dynamicheader.output.dir}"/>
+  </path>
+  
+  <path id="dynamicheader.module.classpath">
+    <path refid="${module.jdk.classpath.dynamicheader}"/>
+    <pathelement location="${dynamicheader.output.dir}"/>
+  </path>
+  
+  <path id="dynamicheader.runtime.module.classpath">
+    <pathelement location="${dynamicheader.testoutput.dir}"/>
+    <pathelement location="${dynamicheader.output.dir}"/>
+  </path>
+  
+  
+  <patternset id="excluded.from.module.dynamicheader">
+    <patternset refid="ignored.files"/>
+  </patternset>
+  
+  <patternset id="excluded.from.compilation.dynamicheader">
+    <patternset refid="excluded.from.module.dynamicheader"/>
+  </patternset>
+  
+  <path id="dynamicheader.module.sourcepath">
+    <dirset dir="${module.dynamicheader.basedir}">
+      <include name="src"/>
+      <include name="resources"/>
+    </dirset>
+  </path>
+  
+  
+  <target name="compile.module.dynamicheader" depends="compile.module.dynamicheader.production,compile.module.dynamicheader.tests" description="Compile module DynamicHeader"/>
+  
+  <target name="compile.module.dynamicheader.production" depends="register.custom.compilers" description="Compile module DynamicHeader; production classes">
+    <mkdir dir="${dynamicheader.output.dir}"/>
+    <javac2 destdir="${dynamicheader.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.dynamicheader}/javac">
+      <compilerarg line="${compiler.args.dynamicheader}"/>
+      <bootclasspath refid="dynamicheader.module.bootclasspath"/>
+      <classpath refid="dynamicheader.module.production.classpath"/>
+      <src refid="dynamicheader.module.sourcepath"/>
+      <patternset refid="excluded.from.compilation.dynamicheader"/>
+    </javac2>
+    
+    <copy todir="${dynamicheader.output.dir}">
+      <fileset dir="${module.dynamicheader.basedir}/src">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+      <fileset dir="${module.dynamicheader.basedir}/resources">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="compile.module.dynamicheader.tests" depends="register.custom.compilers,compile.module.dynamicheader.production" description="compile module DynamicHeader; test classes" unless="skip.tests"/>
+  
+  <target name="clean.module.dynamicheader" description="cleanup module">
+    <delete dir="${dynamicheader.output.dir}"/>
+    <delete dir="${dynamicheader.testoutput.dir}"/>
+  </target>
+  
+  <property name="dynamicheader.plugin.path.jar" value="${module.dynamicheader.basedir}/DynamicHeader.jar"/>
+  
+  <!-- Build archive for plugin 'DynamicHeader' -->
+  <target name="plugin.build.jar.dynamicheader" depends="compile.module.dynamicheader" description="Build plugin archive for module &#39;DynamicHeader&#39;">
+    <jar destfile="${dynamicheader.plugin.path.jar}" duplicate="preserve">
+      <zipfileset dir="${module.dynamicheader.basedir}/out/production/DynamicHeader"/>
+      <zipfileset file="${module.dynamicheader.basedir}/resources/META-INF/plugin.xml" prefix="META-INF"/>
+      <manifest>
+        <attribute name="Created-By" value="IntelliJ IDEA"/>
+        <attribute name="Manifest-Version" value="1.0"/>
+      </manifest>
+    </jar>
+  </target>
+</project>

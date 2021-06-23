@@ -1,0 +1,35 @@
+<idea-plugin>
+  <id>com.sorokdva.dynamicHeader</id>
+  <name>Dynamic Header</name>
+  <version>0.1</version>
+  <vendor email="com.sorokdva.developer@gmail.com">Сорок два</vendor>
+  <depends>com.intellij.modules.platform</depends>
+
+  <description>
+    This plugins allows you to create quickly a personal header into your code.
+    It's highly inspired by the 42Header plugin with some tweaks and adjustments
+  </description>
+
+  <change-notes>
+    Changelist:
+
+    - 2021/06/21 : Creation of the plugin
+  </change-notes>
+
+  <applicationListeners>
+    <listener class="com.sorokdva.dynamicHeader.event.OnSave" topic="com.intellij.openapi.vfs.newvfs.BulkFileListener"/>
+  </applicationListeners>
+
+  <extensions defaultExtensionNs="com.intellij">
+    <applicationConfigurable groupId="tools" displayName="Dynamic Header" id="preferences.DynamicHeader" instance="com.sorokdva.dynamicHeader.settings.HeaderSettings"/>
+
+  </extensions>
+  <actions>
+    <action id="42wob.event.keystroke" class="com.sorokdva.dynamicHeader.event.OnKeystroke" text="Generate Header on Top of Files">
+      <add-to-group group-id="EditorActions" anchor="first"/>
+      <keyboard-shortcut keymap="$default" first-keystroke="alt H"/>
+    </action>
+  </actions>
+
+  <idea-version since-build="193.0" until-build="211.*"/>
+</idea-plugin>
